@@ -1,0 +1,17 @@
+# Ignore raw datasets
+*.csv
+
+# Allow the data dictionary
+!maven_fuzzy_factory_data_dictionary.csv
+
+# Ignore Python virtual environment
+.venv/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore local secrets
+.env
+# Local VS Code settings
+.vscode/settings.json
