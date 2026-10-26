@@ -513,3 +513,53 @@ group by
      else 'unknown'
     end 
 order by conversion_rate_pct desc;
+--# SECTION 11E: Landing-page conversion by device
+--# BUSINESS QUESTION:
+--# Which landing pages perform best on desktop and mobile?
+
+WITH ranked_pageviews AS (
+    SELECT
+        website_session_id,
+        pageview_url,
+        ROW_NUMBER() OVER (
+            PARTITION BY website_session_id
+            ORDER BY created_at, website_pageview_id
+        ) AS pageview_rank
+    FROM website_pageviews
+),
+landing_pages AS (
+    SELECT
+        website_session_id,
+        pageview_url AS landing_page
+    FROM ranked_pageviews
+    WHERE pageview_rank = 1
+),
+session_orders AS (
+    SELECT
+        website_session_id,
+        COUNT(*) AS order_count
+    FROM orders
+    GROUP BY website_session_id
+)
+SELECT
+    COALESCE(lp.landing_page, 'Unknown') AS landing_page,
+    COALESCE(ws.device_type, 'Unknown') AS device_type,
+    COUNT(*) AS total_sessions,
+    COUNT(*) FILTER (
+        WHERE COALESCE(so.order_count, 0) > 0
+    ) AS sessions_with_orders,
+    ROUND(
+        100.0 * COUNT(*) FILTER (
+            WHERE COALESCE(so.order_count, 0) > 0
+        ) / NULLIF(COUNT(*), 0),
+        2
+    ) AS conversion_rate_pct
+FROM website_sessions ws
+LEFT JOIN landing_pages lp
+    ON ws.website_session_id = lp.website_session_id
+LEFT JOIN session_orders so
+    ON ws.website_session_id = so.website_session_id
+GROUP BY
+    COALESCE(lp.landing_page, 'Unknown'),
+    COALESCE(ws.device_type, 'Unknown')
+ORDER BY landing_page, device_type;
