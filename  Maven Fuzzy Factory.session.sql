@@ -369,3 +369,147 @@ SELECT
     ) AS dropoff_from_previous_stage_pct
 FROM funnel_metrics
 ORDER BY stage_order;
+--# check the consistency of the url-based funnel.
+with session_page_flags as (
+    SELECT
+       website_session_id,
+       bool_or(pageview_url = '/products') as viewed_products,
+       bool_or(pageview_url ='/cart') as viewed_cart,
+       bool_or(pageview_url = '/shipping') as viewed_shipping,
+       bool_or(pageview_url = '/billing-2') as viewed_billing,
+       bool_or(pageview_url = '/thank_you_for_your_order') as completed_purchase
+    from website_pageviews
+    group by website_session_id
+)
+SELECT
+   count(*) filter(where viewed_cart and not viewed_products) as cart_with_out_products,
+   count(*) filter(where viewed_shipping and not viewed_cart) as shipping_with_out_cart,
+   count(*) filter(where viewed_billing and not viewed_shipping) as billing_with_out_shipping,
+   count(*) filter(where completed_purchase and not viewed_billing) as purchase_with_out_billing
+from session_page_flags;
+--# identify product-related page urls
+SELECT
+   pageview_url,
+   count(*) as total_pageviews,
+   count(distinct website_session_id) as unique_sessions
+from website_pageviews
+where pageview_url like '%product%'
+    or pageview_url like '%cart%'
+group by pageview_url
+order by total_pageviews desc;
+--# inspect product and otheritem data
+SELECT
+   table_name, 
+   column_name, 
+   data_type
+from information_schema.columns
+where table_schema = 'public'
+   and table_name in ('products','order_items')
+order by table_name,ordinal_position;
+--# compare product-level sales and financial performance
+select
+    p.product_id,
+    p.product_name,
+    count(oi.order_item_id) as units_sold,
+    round(sum(oi.price_usd),2) as total_revenue,
+    round(sum(oi.cogs_usd),2) as total_cost,
+    round(sum(oi.price_usd - oi.cogs_usd),2) as total_profit,
+    round(100.0*sum(oi.price_usd-oi.cogs_usd)/nullif(sum(oi.price_usd),0),2) as profit_margin_pct
+from products p
+join order_items oi 
+   on p.product_id = oi.product_id
+group by p.product_id,p.product_name
+order by total_revenue desc;
+--# verify product profit margins
+SELECT
+   p.product_name,
+   round(sum(oi.price_usd),2) as revenue,
+   round(sum(oi.cogs_usd),2) as total_cost,
+   round(sum(oi.price_usd - oi.cogs_usd),2) as profit,
+   round(100.0*sum(oi.price_usd - oi.cogs_usd)/nullif(sum(oi.price_usd),0),2) as profit_margin_pct
+from products p 
+join order_items oi 
+   on p.product_id = oi.product_id
+group by product_name
+order by revenue desc;
+--# inspect visitor segment fields
+SELECT
+   column_name,
+   data_type
+from information_schema.columns
+where table_schema = 'public'
+   and table_name = 'website_sessions'
+order by ordinal_position; 
+--# traffic-source conversion analysis
+with session_orders as (
+    select 
+       website_session_id,
+       count(*) as order_count
+    from orders
+    group by website_session_id
+),
+session_level as (
+    SELECT
+       ws.website_session_id,
+       coalesce(ws.utm_source,'unknown') as utm_source,
+       coalesce(ws.utm_campaign,'unknown') as utm_campaign,
+       coalesce(so.order_count,0) as order_count
+    from website_sessions ws
+    left join session_orders so 
+         on ws.website_session_id = so.website_session_id
+)
+SELECT
+   utm_source,
+   utm_campaign,
+   count(*) as total_sessions,
+   count(*) filter(where order_count>0) as session_with_orders,
+   round(100.0*count(*) filter(where order_count>0)/nullif(count(*),0),2) as conversion_rate_pct
+from session_level
+group by utm_source,utm_campaign
+order by conversion_rate_pct desc,total_sessions desc;
+--# device-type conversion analysis
+--# finding desktop and device sessions jave different or not 
+with session_orders as (
+    select 
+        website_session_id,
+        count(*) as order_count
+    from orders
+    group by website_session_id
+)
+SELECT
+    coalesce(ws.device_type,'unknown') as device_type,
+    count(*) as total_sessions,
+    count(*) filter(where coalesce(so.order_count,0)>0) as session_with_orders,
+    round(100.0*(count(*) filter(where coalesce(so.order_count,0)>0))/nullif(count(*),0),2) as conversion_rate_pct
+from website_sessions ws 
+left join session_orders so 
+     on ws.website_session_id = so.website_session_id
+group by coalesce(ws.device_type,'unknown')
+order by conversion_rate_pct desc;
+--# new vs returning visitors conversion 
+with session_orders as (
+    select 
+        website_session_id,
+        count(*) as order_count
+    from orders
+    group by website_session_id
+)
+select 
+   case
+    when ws."is_repeat-session" = 1 then 'returning'
+    when ws."is_repeat-session" = 0 then 'new'
+    else 'unknown'
+   end as visitor_type,
+   count(*) as total_sessions,
+   count(*) filter(where coalesce(so.order_count,0)>0) as sessions_with_orders,
+   round(100.0*count(*) filter(where coalesce(so.order_count,0)>0)/nullif(count(*),0),2) as conversion_rate_pct
+from website_sessions ws 
+left join session_orders so 
+     on ws.website_session_id = so.website_session_id
+group by 
+    CASE
+     when ws."is_repeat-session" = 1 then 'returning'
+     when ws."is_repeat-session" = 0 then 'new'
+     else 'unknown'
+    end 
+order by conversion_rate_pct desc;
