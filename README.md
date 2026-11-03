@@ -1,220 +1,266 @@
 # Maven Fuzzy Factory | E-Commerce Conversion Optimization
 
-**End-to-End E-Commerce Analytics Project Using PostgreSQL, Python, Pandas, and Tableau**
+## 1. Project Overview
 
-## Project Overview
+An end-to-end e-commerce analytics project using **PostgreSQL, Python, Pandas, Jupyter Notebook, Matplotlib, and Tableau** to analyze website performance, investigate customer purchasing behavior, and identify conversion optimization opportunities.
 
-Maven Fuzzy Factory is an e-commerce analytics project focused on understanding website performance, customer purchasing behavior, and conversion opportunities.
+**Business Problem:** Why do visitors abandon the purchase process, and which areas of the website should the business prioritize to improve conversion?
 
-The project analyzes website sessions, pageviews, orders, marketing channels, and product performance to identify factors influencing customer conversions.
+**Analysis Period:** March 2012 – March 2015
 
-The primary objective is to investigate **why website visitors do not complete purchases and which areas of the customer journey offer the greatest opportunities for conversion improvement**.
+### Project Objectives
 
-## Business Problem
+- Analyze website traffic and purchase conversion.
+- Evaluate marketing sources and landing-page performance.
+- Investigate customer behavior across the conversion funnel.
+- Compare mobile and desktop purchasing journeys.
+- Identify potential conversion improvement opportunities.
 
-An e-commerce business can generate substantial website traffic without converting enough visitors into paying customers.
+## 2. Tools and Technologies
 
-To improve business performance, it is important to understand:
-
-- Which marketing channels generate valuable traffic?
-- Which landing pages convert visitors into customers?
-- Where do customers abandon the shopping funnel?
-- How does conversion performance differ between desktop and mobile users?
-- Are returning visitors more likely to purchase than new visitors?
-- Which products contribute most to revenue and profitability?
-
-This project uses data analysis to investigate these questions and identify potential business improvements.
-
-## Tools and Technologies
-
-- **PostgreSQL:** Data exploration, joins, aggregations, CTEs, window functions, and KPI calculations.
-- **Python:** Data analysis and exploration.
-- **Pandas:** Data manipulation and analytical workflows.
-- **Tableau:** Business intelligence and data visualization.
-- **Git and GitHub:** Version control and project documentation.
-
-## Dataset Overview
-
-The dataset contains e-commerce activity from March 2012 to March 2015.
-
-| Dataset | Total Records |
-|---|---:|
-| Website Sessions | 472,871 |
-| Website Pageviews | 1,188,124 |
-| Orders | 32,313 |
-
-Additional product and order-item data support revenue and profitability analysis.
-
-## Project Objectives
-
-1. Measure overall website conversion performance.
-2. Evaluate marketing traffic sources and campaigns.
-3. Compare landing-page effectiveness.
-4. Identify shopping-funnel abandonment points.
-5. Analyze desktop and mobile conversion differences.
-6. Compare new and returning visitor behavior.
-7. Evaluate landing-page conversion by device type.
-8. Examine product revenue and profitability.
-
-## Key Performance Indicators
-
-| KPI | Definition |
+| Technology | Application |
 |---|---|
-| Website Sessions | Total recorded website visits |
-| Sessions With Orders | Sessions containing at least one order |
-| Session Conversion Rate | Sessions with orders / Total sessions × 100 |
-| Landing-Page Conversion Rate | Ordering sessions starting on a landing page / Sessions starting on that page × 100 |
-| Funnel Progression Rate | Sessions reaching the next stage / Sessions reaching the current stage × 100 |
-| Funnel Drop-Off Rate | 100% − Funnel progression rate |
-| Average Order Value | Total revenue / Number of orders |
-| Profit Margin | (Revenue − Cost of Goods Sold) / Revenue × 100 |
+| PostgreSQL | SQL analysis, joins, CTEs, aggregations, business KPIs |
+| Python | Analytical programming and data processing |
+| Pandas | Data validation, cleaning checks, transformation, grouping, merging, conversion analysis |
+| Jupyter Notebook | Organizing and documenting the Python analysis |
+| SQLAlchemy & Psycopg | Connecting Python to PostgreSQL |
+| Matplotlib | Data visualization |
+| Tableau | Interactive business dashboard |
+| Git & GitHub | Version control and portfolio documentation |
 
-## Key Analytical Findings
+## 3. Business Performance Overview
 
-### 1. Overall Website Conversion
-
-- **Total website sessions:** 472,871
-- **Total orders:** 32,313
-- **Session conversion rate:** 6.83%
-
-Approximately 6.83% of website sessions resulted in a purchase, indicating an opportunity to investigate why most visits do not convert.
-
-### 2. Landing-Page Performance
-
-| Landing Page | Conversion Rate |
+| KPI | Result |
 |---|---:|
-| `/lander-5` | 10.17% |
-| `/lander-2` | 7.72% |
-| `/lander-4` | 7.54% |
-| `/home` | 7.06% |
-| `/lander-1` | 4.53% |
-| `/lander-3` | 3.39% |
+| Total Website Sessions | 472,871 |
+| Total Orders | 32,313 |
+| Overall Conversion Rate | 6.83% |
+| Total Order Revenue | $1,938,509.75 |
 
-**Finding:** `/lander-5` recorded the highest conversion rate among the analyzed landing pages, while `/lander-3` performed the worst.
+Revenue represents recorded order revenue before refunds.
 
-This difference suggests that landing-page design, traffic quality, and user experience deserve further investigation.
+## 4. PostgreSQL — SQL Business Analysis
 
-### 3. Shopping Funnel Analysis
+SQL was used to investigate the overall performance of the e-commerce website.
 
-| Funnel Stage | Sessions | Progression From Previous Stage |
-|---|---:|---:|
-| Product Page | 261,231 | — |
-| Cart | 94,953 | 36.35% |
-| Shipping | 64,484 | 67.91% |
-| Billing | 48,441 | 75.12% |
-| Purchase Confirmation | 32,313 | 66.71% |
+### Analyses Performed
+
+- Data profiling and table relationship analysis
+- Overall website conversion performance
+- Mobile versus desktop conversion analysis
+- New versus returning visitor performance
+- Marketing campaign and traffic-source analysis
+- Landing-page conversion analysis
+- Website purchase funnel analysis
+- Product revenue and profitability analysis
+
+### Important SQL Findings
+
+- Desktop conversion: **8.50%**
+- Mobile conversion: **3.09%**
+- Highest-converting landing page: **/lander-5 — 10.17%**
+- Lowest-converting landing page: **/lander-3 — 3.39%**
+- Overall product-to-cart progression: **36.35%**
+
+These results helped identify the business problems investigated further using Python and Pandas.
+
+## 5. Python, Pandas & Jupyter Notebook — Data Validation and Deeper Analysis
+
+**Notebook:** `01_data_exploration.ipynb`
+
+Python and Pandas were used to validate the existing e-commerce data, create session-level analytical datasets, compare customer behavior, and prepare visualizations and Tableau-ready outputs.
+
+The analysis was developed and documented in Jupyter Notebook using VS Code.
+
+### 5.1 Database Integration
+
+Connected Python to the existing PostgreSQL database using **SQLAlchemy and Psycopg**.
+
+Used `pd.read_sql()` to retrieve selected columns from:
+
+- `website_sessions`
+- `website_pageviews`
+- `orders`
+
+The retrieved data was stored in Pandas DataFrames for further processing.
+
+### 5.2 Data Quality Validation
+
+Performed validation checks using Pandas before continuing the funnel analysis.
+
+**Checks performed:**
+
+- Missing-value checks using `isna().sum()`
+- Duplicate primary-ID checks using `duplicated().sum()`
+- Session relationship validation using `isin()`
+- Record-count reconciliation with PostgreSQL
+- Checkout page URL verification using `value_counts()` and `str.contains()`
+
+**Results:**
+
+- No missing values in the selected analytical columns.
+- No duplicate primary identifiers in the analyzed tables.
+- No pageviews or orders referencing unknown website sessions.
+- 32,313 purchasing sessions identified, matching the source data.
+
+### 5.3 Data Transformation Using Pandas
+
+Created a session-level funnel dataset using Pandas operations rather than repeating the main SQL aggregation queries.
+
+**Key transformations:**
+
+- Used `isin()` to identify relevant funnel pageviews.
+- Used `map()` to assign page URLs to funnel stages.
+- Combined `/billing` and `/billing-2` into a common billing stage.
+- Used `pd.crosstab()` to identify which stages each session reached.
+- Used `merge()` to connect funnel information with device types.
+- Used `fillna()` to handle missing funnel-stage indicators.
+- Matched orders to sessions to identify purchases.
+- Used `groupby()` and `sum()` to calculate funnel-stage counts by device.
+
+These transformations created the foundation for comparing mobile and desktop purchasing behavior.
+
+### 5.4 Mobile vs Desktop Funnel Analysis
+
+Calculated progression ratios directly in Pandas using DataFrame column operations, loops, and percentage calculations.
+
+| Funnel Stage | Desktop | Mobile | Difference |
+|---|---:|---:|---:|
+| Products → Cart | 39.08% | 28.73% | 10.35 pp |
+| Cart → Shipping | 70.11% | 59.56% | 10.55 pp |
+| Shipping → Billing | 82.98% | 70.69% | 12.29 pp |
+| Billing → Purchase | 63.59% | 54.08% | 9.51 pp |
 
 **Key findings:**
 
-- The largest funnel drop-off occurred between product pages and the cart, at **63.65%**.
-- Approximately **32.09%** of sessions reaching the cart did not progress to shipping.
-- Approximately **33.29%** of sessions reaching billing did not progress to purchase confirmation.
+- Mobile sessions showed lower progression ratios at every measured stage.
+- Products to Cart had the lowest progression ratio for both devices.
+- Shipping to Billing showed the largest desktop–mobile gap at 12.29 percentage points.
 
-The product-to-cart transition represents the largest observed opportunity for funnel improvement.
+### 5.5 Additional Pandas Analysis
 
-### 4. Marketing Channel Performance
+Prepared additional analytical datasets for the Tableau dashboard.
 
-| Traffic Segment | Conversion Rate |
-|---|---:|
-| Bing Search — Brand | 8.86% |
-| Google Search — Brand | 7.53% |
-| Unattributed Traffic | 7.34% |
-| Bing Search — Nonbrand | 6.95% |
-| Google Search — Nonbrand | 6.66% |
-| Socialbook — Desktop Targeted | 5.15% |
-| Socialbook — Pilot | 1.08% |
+**Landing Page Performance**
 
-**Finding:** Branded search traffic generally converted at higher rates than nonbranded search and the analyzed social campaigns.
+- Identified the first pageview of each session using `sort_values()` and `drop_duplicates()`.
+- Linked landing sessions to purchases.
+- Calculated sessions, purchasing sessions, and conversion rates using `groupby()` and `agg()`.
 
-This suggests that customer purchase intent may vary significantly across acquisition channels.
+**Marketing Source Performance**
 
-### 5. Desktop vs. Mobile Conversion
+- Identified purchasing sessions for each marketing source.
+- Handled missing marketing-source values using `fillna()`.
+- Calculated marketing-source conversion rates and traffic volumes.
 
-| Device | Sessions | Sessions With Orders | Conversion Rate |
-|---|---:|---:|---:|
-| Desktop | 327,027 | 27,805 | 8.50% |
-| Mobile | 145,844 | 4,508 | 3.09% |
+**Business KPI Preparation**
 
-**Finding:** Desktop sessions converted at approximately 2.75 times the mobile session conversion rate.
+- Loaded database-wide KPI results into Pandas.
+- Calculated overall conversion rate and average order value.
+- Exported the KPI summary for Tableau.
 
-The gap suggests that mobile user experience, checkout usability, and traffic composition should be investigated.
+### 5.6 Data Visualization with Matplotlib
 
-### 6. New vs. Returning Visitors
+Created a grouped bar chart comparing desktop and mobile funnel performance.
 
-| Visitor Type | Sessions | Sessions With Orders | Conversion Rate |
-|---|---:|---:|---:|
-| New | 394,318 | 26,164 | 6.64% |
-| Returning | 78,553 | 6,149 | 7.83% |
+The visualization highlights conversion differences across the four measured funnel stages.
 
-**Finding:** Returning visitors had a higher conversion rate than new visitors.
+![Mobile vs Desktop Funnel Analysis](outputs/device_funnel_comparison.png)
 
-This indicates that repeat engagement is associated with stronger purchasing behavior in the observed data.
+### 5.7 Exporting Analytical Datasets
 
-### 7. Landing-Page Conversion by Device
+Exported the processed analytical results using Pandas `to_csv()`.
 
-The latest SQL analysis combines landing-page identification with device-level conversion measurement.
+The generated files include:
 
-For each landing page and device type, the query calculates:
+- `business_kpi_summary.csv`
+- `device_funnel_counts.csv`
+- `device_funnel_comparison.csv`
+- `landing_page_performance.csv`
+- `marketing_source_performance.csv`
 
-- Total website sessions.
-- Sessions containing orders.
-- Session conversion rate.
+These datasets were used to create Tableau visualizations.
 
-The analysis uses PostgreSQL window functions to identify the first pageview of each session, then joins landing-page data with website sessions and orders.
+## 6. Tableau — Interactive Dashboard
 
-**Business question:** Which landing pages perform best on desktop and mobile?
+Developed and published an interactive Tableau dashboard combining the SQL findings and Pandas analytical outputs.
 
-This analysis provides a more detailed view of landing-page effectiveness by separating desktop and mobile performance. Device-specific results have not yet been included in the reported findings.
+### Dashboard Components
 
-### 8. Product Revenue and Profitability
+**Business KPIs**
+- Total Sessions
+- Total Orders
+- Overall Conversion Rate
+- Total Revenue
 
-The product-level analysis identifies revenue contribution and profit margins across the product portfolio.
+**Analytical Visualizations**
+- Mobile vs Desktop Funnel Performance
+- Device Conversion Gap
+- Landing Page Conversion Performance
+- Marketing Source Conversion Performance
 
-| Product | Revenue (USD) |
-|---|---:|
-| Original Mr. Fuzzy | $1,211,057.74 |
-| Forever Love Bear | $347,702.04 |
-| Birthday Sugar Panda | $229,260.15 |
-| Hudson River Mini Bear | $150,489.82 |
+### Live Dashboard
 
-**Profitability findings:**
+[View E-Commerce Conversion Optimization Dashboard on Tableau Public](https://public.tableau.com/app/profile/naveen.chunduri/viz/Book1_17936724814300/E-CommerceConversionOptimization)
 
-- Birthday Sugar Panda: 68.49% profit margin.
-- Hudson River Mini Bear: 68.36% profit margin.
-- Forever Love Bear: 62.51% profit margin.
-- Original Mr. Fuzzy: 61.01% profit margin.
+## 7. Key Business Findings
 
-Original Mr. Fuzzy generated the highest revenue among the listed products, while Birthday Sugar Panda achieved the highest profit margin.
+**Finding 1 — Mobile Conversion Gap**
 
-## Business Recommendations
+Desktop visitors converted more frequently than mobile visitors, with an overall conversion rate of 8.50% compared with 3.09%.
 
-Based on the analytical findings, the following areas warrant investigation:
+**Finding 2 — Product-to-Cart Engagement**
 
-1. **Improve product-to-cart progression:** Investigate product-page clarity, pricing presentation, and add-to-cart usability.
-2. **Evaluate mobile conversion barriers:** Examine mobile navigation, page performance, and checkout usability.
-3. **Review landing-page performance:** Investigate why high-converting pages outperform lower-converting pages, accounting for traffic differences.
-4. **Optimize marketing acquisition:** Compare branded, nonbranded, and social traffic using conversion performance alongside acquisition costs.
-5. **Encourage returning customer engagement:** Explore retention and remarketing opportunities based on the higher observed conversion rate of returning visitors.
-6. **Balance revenue and profitability:** Consider both sales volume and profit margin when evaluating product performance.
+Product-to-cart progression was relatively low for both devices, especially mobile.
 
-## Analytical Approach
+**Finding 3 — Checkout Performance**
 
-The PostgreSQL analysis uses:
+Shipping to Billing had the largest observed device-performance gap, suggesting a potential area for mobile checkout investigation.
 
-- SQL joins to combine sessions, pageviews, orders, and product information.
-- Common Table Expressions (CTEs) to organize multistage analytical queries.
-- Window functions to identify session landing pages.
-- Conditional aggregation to calculate sessions containing orders.
-- Funnel-stage calculations to measure customer progression.
-- Grouped aggregations to compare devices, campaigns, and visitor segments.
-- Revenue, cost, and margin calculations to evaluate product performance.
+**Finding 4 — Landing Page Differences**
 
-## Project Conclusion
+Landing pages showed substantial differences in conversion performance, with `/lander-5` outperforming `/lander-3` in the observed data.
 
-The Maven Fuzzy Factory analysis identifies several important patterns in e-commerce conversion performance.
+## 8. Business Recommendations
 
-The largest observed shopping-funnel loss occurs before visitors add products to their carts. Desktop users convert substantially more frequently than mobile users, returning visitors demonstrate stronger conversion behavior than new visitors, and landing-page performance varies considerably.
+1. **Investigate mobile checkout usability:** Review the shipping and billing journey for potential form, navigation, or technical friction.
+2. **Evaluate product-page engagement:** Examine product descriptions, add-to-cart visibility, and mobile usability.
+3. **Review landing-page differences:** Investigate traffic composition and customer behavior across high- and low-converting pages.
+4. **Assess marketing-source quality:** Compare conversion rates alongside traffic volumes and campaign characteristics.
+5. **Test proposed changes:** Use controlled A/B experiments to evaluate whether improvements increase conversion rates.
 
-Marketing channel differences and product profitability further demonstrate the importance of evaluating business performance from multiple perspectives.
+## 9. Analysis Limitations
 
-Together, these findings provide a data-driven foundation for prioritizing conversion optimization opportunities, evaluating customer behavior, and supporting e-commerce business decisions.
+Funnel progression ratios compare sessions that reached different pages but do not enforce the chronological order of page visits. They are stage-reach ratios rather than strict sequential funnel conversion probabilities.
+
+Observed performance differences identify associations and potential opportunities but do not establish the causes of abandonment.
+
+## 10. Project Structure
+
+```text
+Maven_Fuzzy_Factory/
+│
+├── README.md
+├── SQL Analysis File
+├── 01_data_exploration.ipynb
+├── .gitignore
+│
+└── outputs/
+    ├── business_kpi_summary.csv
+    ├── device_funnel_counts.csv
+    ├── device_funnel_comparison.csv
+    ├── device_funnel_comparison.png
+    ├── landing_page_performance.csv
+    └── marketing_source_performance.csv
+```
+
+The raw source datasets are excluded from the repository using `.gitignore`.
+
+## 11. Conclusion
+
+This project demonstrates an end-to-end business analytics workflow using SQL, Python, Pandas, Jupyter Notebook, Matplotlib, and Tableau.
+
+PostgreSQL was used for comprehensive business performance analysis. Python and Pandas were used for data validation, session-level transformations, deeper conversion investigation, and analytical dataset preparation. Tableau was used to communicate the findings through an interactive business dashboard.
+
+Together, these analyses highlight conversion performance differences across devices, landing pages, and marketing sources, supporting data-driven prioritization of potential website improvements.
