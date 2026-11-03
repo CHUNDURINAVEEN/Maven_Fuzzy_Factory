@@ -1,0 +1,5 @@
+funnel_stage,desktop_pct,mobile_pct,gap_percentage_points
+products to cart,39.08,28.73,10.35
+cart to shipping,70.11,59.56,10.55
+shipping to Billing,82.98,70.69,12.29
+Billing to purchase,63.59,54.08,9.51
